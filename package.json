@@ -1,0 +1,15 @@
+{
+  "name": "gp-online-monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:packages": "pnpm --filter \"@gp-online/*\" build",
+    "build": "pnpm build:packages && pnpm --filter web build",
+    "dev": "pnpm build:packages && pnpm --filter web dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}

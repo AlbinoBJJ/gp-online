@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Responsividade de Texto no Header */
+@media (max-width: 640px) {
+  .header-subtitle {
+    display: none !important;
+  }
+  .header-title-engine {
+    display: none !important;
+  }
+  .desktop-only-text {
+    display: none !important;
+  }
+}
+
+/* Custom Scrollbar para os Drawers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* Highlights do AlphaTab */
+.alphaTab .at-cursor-bar {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.alphaTab .at-cursor-beat {
+  background-color: rgba(16, 185, 129, 0.35) !important;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@gp-online/core",
+  "version": "1.0.0",
+  "description": "Parser, validador de anacruse e gerenciador de arquivos",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@coderline/alphatab": "^1.8.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
