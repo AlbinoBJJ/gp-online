@@ -10,11 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gp-online/audio-engine": "workspace:*",
     "@coderline/alphatab": "^1.8.4",
+    "@gp-online/audio-engine": "workspace:*",
     "@gp-online/core": "workspace:*",
     "@tonaljs/tonal": "^4.10.0",
-    "fretboard": "^0.0.1",
     "lucide-react": "^1.44.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type QuizOption } from './chordGenerator';
 import { playChordExerciseAudio, playDegreeWithReferenceAudio } from './earAudioPlayer';
-import { loadInstrumentSound } from '../fretboardCalculator';
+import { loadAudioInstrument as loadInstrumentSound } from '@gp-online/audio-engine';
 
 import { generateIntervalExercise, playIntervalAudio } from './intervalTrainer';
 import { generateChordQualityExercise } from './chordQualityTrainer';

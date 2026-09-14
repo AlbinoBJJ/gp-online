@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Scale, Note, Interval } from '@tonaljs/tonal';
+import { useState } from 'react';
 import {
   Guitar,
   Eye,
@@ -18,20 +17,13 @@ import {
   Disc
 } from 'lucide-react';
 import {
-  CHROMATIC_SHARPS,
-  CHROMATIC_FLATS,
   SCALE_GROUPS,
   INTERVAL_COLORS,
-  INSTRUMENT_SOUNDS,
-  STANDARD_TUNING,
-  calculateFretboardDots,
-  getScaleTheoryInfo,
-  playInstrumentNote,
-  loadInstrumentSound,
-  type FretDot
-} from './fretboardCalculator';
-import { FretboardCanvas } from './FretboardCanvas';
+  INSTRUMENT_SOUNDS
+} from './fretboard/fretboardCalculator';
+import { FretboardCanvas } from './fretboard/FretboardCanvas';
 import { Header } from '../components/Header';
+import { useFretboard } from './fretboard/useFretboard';
 
 interface FretboardToolProps {
   activeTool?: 'player' | 'fretboard' | 'ear-training';
@@ -39,140 +31,29 @@ interface FretboardToolProps {
 }
 
 export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: FretboardToolProps) {
-  const [tonic, setTonic] = useState<string>('C');
-  const [scaleType, setScaleType] = useState<string>('major');
-  const [isChromaticMode, setIsChromaticMode] = useState<boolean>(false);
-  const [chromaticAccidental, setChromaticAccidental] = useState<'sharp' | 'flat'>('sharp');
-
-  const [fretsCount, setFretsCount] = useState<number>(12);
-  const [displayMode, setDisplayMode] = useState<'notes' | 'degrees'>('degrees');
-
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [editTargetMode, setEditTargetMode] = useState<'single' | 'interval'>('single');
-
-  const [isAudioEnabled, setIsAudioEnabled] = useState<boolean>(true);
-  const [selectedInstrument, setSelectedInstrument] = useState<string>('acoustic_guitar_steel');
-  const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
-
-  const [visibleIntervalNotes, setVisibleIntervalNotes] = useState<string[]>([]);
-  const [hiddenSingleDots, setHiddenSingleDots] = useState<string[]>([]);
+  const {
+    tonic, setTonic,
+    scaleType, setScaleType,
+    isChromaticMode, setIsChromaticMode,
+    chromaticAccidental, setChromaticAccidental,
+    fretsCount, setFretsCount,
+    displayMode, setDisplayMode,
+    isEditMode, setIsEditMode,
+    editTargetMode, setEditTargetMode,
+    isAudioEnabled, setIsAudioEnabled,
+    selectedInstrument, setSelectedInstrument,
+    isAudioLoading, currentNotes,
+    visibleIntervalNotes,
+    TONIC_OPTIONS, dots, theoryInfo,
+    toggleIntervalGlobalVisibility, toggleAllIntervals,
+    handleDotClick, handleEmptyFretClick
+  } = useFretboard();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [isOptionsAccordionOpen, setIsOptionsAccordionOpen] = useState<boolean>(true);
   const [isTheoryAccordionOpen, setIsTheoryAccordionOpen] = useState<boolean>(false);
   const [isLegendAccordionOpen, setIsLegendAccordionOpen] = useState<boolean>(false);
   const [isFilterAccordionOpen, setIsFilterAccordionOpen] = useState<boolean>(false);
-
-  const TONIC_OPTIONS = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'];
-
-  const getAvailableNotes = (): string[] => {
-    if (isChromaticMode) {
-      return chromaticAccidental === 'sharp' ? CHROMATIC_SHARPS : CHROMATIC_FLATS;
-    }
-    const rawScale = Scale.get(`${tonic} ${scaleType}`);
-    return rawScale.notes.map((n) => Note.pitchClass(n));
-  };
-
-  const currentNotes = getAvailableNotes();
-
-  useEffect(() => {
-    let isMounted = true;
-    setIsAudioLoading(true);
-
-    const promise = loadInstrumentSound(selectedInstrument);
-
-    if (promise && typeof promise.then === 'function') {
-      promise
-        .then(() => {
-          if (isMounted) setIsAudioLoading(false);
-        })
-        .catch(() => {
-          if (isMounted) setIsAudioLoading(false);
-        });
-    } else {
-      if (isMounted) setIsAudioLoading(false);
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedInstrument]);
-
-  useEffect(() => {
-    setVisibleIntervalNotes(currentNotes);
-    setHiddenSingleDots([]);
-  }, [tonic, scaleType, isChromaticMode, chromaticAccidental]);
-
-  const toggleIntervalGlobalVisibility = (noteToToggle: string) => {
-    setVisibleIntervalNotes((prev) =>
-      prev.includes(noteToToggle)
-        ? prev.filter((n) => n !== noteToToggle)
-        : [...prev, noteToToggle]
-    );
-  };
-
-  const toggleAllIntervals = () => {
-    if (visibleIntervalNotes.length === currentNotes.length) {
-      setVisibleIntervalNotes([]);
-    } else {
-      setVisibleIntervalNotes(currentNotes);
-    }
-    setHiddenSingleDots([]);
-  };
-
-  const handleDotClick = (dot: FretDot) => {
-    if (isAudioEnabled && !isAudioLoading) {
-      playInstrumentNote(dot.midi, selectedInstrument);
-    }
-
-    if (isEditMode) {
-      if (editTargetMode === 'single') {
-        setHiddenSingleDots((prev) => [...prev, dot.id]);
-      } else {
-        toggleIntervalGlobalVisibility(dot.noteName);
-      }
-    }
-  };
-
-  const handleEmptyFretClick = (stringNum: number, fretNum: number) => {
-    const dotId = `s-${stringNum}-f-${fretNum}`;
-    const openNote = STANDARD_TUNING[stringNum - 1];
-    const fretNote = Note.transpose(openNote, Interval.fromSemitones(fretNum));
-    const pitchClass = Note.pitchClass(fretNote);
-    const midi = Note.midi(fretNote) || 0;
-
-    if (isAudioEnabled && !isAudioLoading) {
-      playInstrumentNote(midi, selectedInstrument);
-    }
-
-    if (isEditMode) {
-      if (editTargetMode === 'single' && hiddenSingleDots.includes(dotId)) {
-        setHiddenSingleDots((prev) => prev.filter((id) => id !== dotId));
-      } else if (editTargetMode === 'interval' && !visibleIntervalNotes.includes(pitchClass)) {
-        toggleIntervalGlobalVisibility(pitchClass);
-      }
-    }
-  };
-
-  const dots = calculateFretboardDots(
-    tonic,
-    isChromaticMode ? 'chromatic' : scaleType,
-    chromaticAccidental,
-    fretsCount,
-    visibleIntervalNotes,
-    hiddenSingleDots,
-    displayMode
-  );
-
-  const theoryInfo = isChromaticMode
-    ? {
-        name: `Visão Cromática Completa (Tônica: ${tonic})`,
-        formula: ['T', '2m', '2M', '3m', '3M', '4J', '4#', '5J', '6m', '6M', '7m', '7M'],
-        notes: chromaticAccidental === 'sharp' ? CHROMATIC_SHARPS : CHROMATIC_FLATS,
-        description: 'Mapeamento cromático contendo todas as 12 notas do braço do instrumento.',
-        usage: 'Exercícios de agilidade e memorização.'
-      }
-    : getScaleTheoryInfo(tonic, scaleType);
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -326,7 +207,6 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               </div>
             </div>
 
-            {/* SEÇÃO 1: ESCALA & TRANTES */}
             <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
               <button
                 onClick={() => setIsOptionsAccordionOpen(!isOptionsAccordionOpen)}
@@ -338,7 +218,6 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
 
               {isOptionsAccordionOpen && (
                 <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {/* SELETOR DE MODO CROMÁTICO */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
                     <span style={{ fontSize: '11px', color: '#f8fafc', fontWeight: 700 }}>Modo Cromático:</span>
                     <button
@@ -358,7 +237,6 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
                     </button>
                   </div>
 
-                  {/* SELETOR DE ACIDENTES CROMÁTICOS (SUSTENIDO / BEMOL) */}
                   {isChromaticMode && (
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <button

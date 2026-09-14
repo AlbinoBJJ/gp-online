@@ -4,7 +4,9 @@ import type { InstrumentPreset } from './types';
 export const DEFAULT_INSTRUMENTS: InstrumentPreset[] = [
   { id: 'steel_guitar', label: 'Violão de Aço Real', soundfontName: 'acoustic_guitar_steel' },
   { id: 'clean_guitar', label: 'Guitarra Elétrica Clean', soundfontName: 'electric_guitar_clean' },
-  { id: 'grand_piano', label: 'Piano de Cauda Real', soundfontName: 'acoustic_grand_piano' }
+  { id: 'bass_finger', label: 'Baixo Elétrico', soundfontName: 'electric_bass_finger' },
+  { id: 'grand_piano', label: 'Piano de Cauda Real', soundfontName: 'acoustic_grand_piano' },
+  { id: 'violin', label: 'Violino', soundfontName: 'violin' }
 ];
 
 export class AudioEngine {
@@ -72,7 +74,6 @@ export class AudioEngine {
     if (player) {
       player.play(noteString, undefined, { duration });
     } else {
-      // Carrega sob demanda se ainda não estiver em memória
       this.loadInstrument(soundfontName).then((p) => {
         p.play(noteString, undefined, { duration });
       });

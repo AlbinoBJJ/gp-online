@@ -9,7 +9,7 @@ interface PlayerProps {
   onRenderStatusChange: (isLoading: boolean) => void;
 }
 
-export function Player({
+export function PlayerCanvas({
   onApiReady,
   onScoreLoaded,
   onPlayerStateChanged,

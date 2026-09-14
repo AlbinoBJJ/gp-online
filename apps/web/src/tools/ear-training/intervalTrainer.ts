@@ -1,6 +1,6 @@
 import { Note, Interval } from '@tonaljs/tonal';
 import { type QuizOption } from './chordGenerator';
-import { playInstrumentNote } from '../fretboardCalculator';
+import { playAudioNote as playInstrumentNote } from '@gp-online/audio-engine';
 
 export const ALL_INTERVALS: QuizOption[] = [
   { label: '2ª Menor', code: '2m' }, { label: '2ª Maior', code: '2M' },

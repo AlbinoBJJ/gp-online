@@ -1,5 +1,5 @@
 import { Scale, Note, Interval } from '@tonaljs/tonal';
-import { AudioEngine, DEFAULT_INSTRUMENTS } from '@gp-online/audio-engine';
+import { DEFAULT_INSTRUMENTS } from '@gp-online/audio-engine';
 
 export const CHROMATIC_SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 export const CHROMATIC_FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -127,17 +127,6 @@ export const SCALE_DESCRIPTIONS: { [key: string]: { description: string; usage: 
   }
 };
 
-// Instância Singleton do Motor de Áudio
-const audioEngine = AudioEngine.getInstance();
-
-export function loadInstrumentSound(soundfontName: string): Promise<any> {
-  return audioEngine.loadInstrument(soundfontName);
-}
-
-export function playInstrumentNote(midiNumber: number, soundfontName: string = 'acoustic_guitar_steel') {
-  audioEngine.playNote(midiNumber, soundfontName);
-}
-
 export function formatIntervalNotation(intervalCode: string): string {
   const map: { [key: string]: string } = {
     '1P': 'T', '2m': '2m', '2M': '2M', '3m': '3m', '3M': '3M',
@@ -166,7 +155,7 @@ export function calculateFretboardDots(
   tonic: string,
   scaleType: string | 'chromatic',
   chromaticAccidental: 'sharp' | 'flat',
-  fretsCount: number = 12, // Padrão 12 Trastes
+  fretsCount: number = 12,
   visibleIntervalNotes: string[],
   hiddenSingleDots: string[],
   displayMode: 'notes' | 'degrees'
