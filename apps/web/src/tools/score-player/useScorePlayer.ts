@@ -15,7 +15,7 @@ export function useScorePlayer() {
 
   // SoundFont URL State
   const [soundFontUrl, setSoundFontUrl] = useState<string>(
-    `${import.meta.env.BASE_URL}soundfont/GeneralUser-GS.sf2`
+    'https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.4/dist/soundfont/sonivox.sf2'
   );
 
   // Controles Globais
