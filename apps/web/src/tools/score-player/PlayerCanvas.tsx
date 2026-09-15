@@ -30,6 +30,7 @@ export function PlayerCanvas({
     const api = new alphaTab.AlphaTabApi(containerRef.current, {
       core: {
         fontDirectory: `${import.meta.env.BASE_URL}font/`,
+        scriptFile: `${import.meta.env.BASE_URL}assets/alphaTab.worker.mjs`,
         engine: 'svg'
       },
       player: {
