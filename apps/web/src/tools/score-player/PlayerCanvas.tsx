@@ -20,8 +20,6 @@ export function PlayerCanvas({
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<alphaTab.AlphaTabApi | null>(null);
-  
-  // Armazena a última partitura carregada em buffer para re-renderizar ao trocar o soundfont
   const lastScoreBufferRef = useRef<Uint8Array | null>(null);
 
   useEffect(() => {
@@ -30,7 +28,6 @@ export function PlayerCanvas({
     const api = new alphaTab.AlphaTabApi(containerRef.current, {
       core: {
         fontDirectory: `${import.meta.env.BASE_URL}font/`,
-        scriptFile: `${import.meta.env.BASE_URL}assets/alphaTab.worker.mjs`,
         engine: 'svg'
       },
       player: {
@@ -60,7 +57,6 @@ export function PlayerCanvas({
       onRenderStatusChange(false);
     });
 
-    // Intercepta o carregamento de arquivos para salvar o buffer na referência
     const originalLoad = api.load.bind(api);
     api.load = (data: Uint8Array) => {
       lastScoreBufferRef.current = data;
@@ -73,9 +69,8 @@ export function PlayerCanvas({
       api.destroy();
       apiRef.current = null;
     };
-  }, [soundFontUrl]); // Recria a API de forma limpa quando o SoundFont muda, restaurando a música em seguida
+  }, [soundFontUrl]);
 
-  // Se houver uma música carregada e o soundFontUrl mudar, re-carrega o buffer automaticamente
   useEffect(() => {
     if (apiRef.current && lastScoreBufferRef.current) {
       apiRef.current.load(lastScoreBufferRef.current);
