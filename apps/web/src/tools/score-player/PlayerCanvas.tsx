@@ -29,7 +29,7 @@ export function PlayerCanvas({
 
     const api = new alphaTab.AlphaTabApi(containerRef.current, {
       core: {
-        fontDirectory: '/gp-online/font/',
+        fontDirectory: `${import.meta.env.BASE_URL}font/`,
         engine: 'svg'
       },
       player: {
