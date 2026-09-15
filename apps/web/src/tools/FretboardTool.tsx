@@ -14,7 +14,9 @@ import {
   Edit3,
   CheckCircle2,
   Target,
-  Disc
+  Disc,
+  Music,
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   SCALE_GROUPS,
@@ -37,10 +39,14 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
     isChromaticMode, setIsChromaticMode,
     chromaticAccidental, setChromaticAccidental,
     fretsCount, setFretsCount,
+    stringCount, handleStringCountChange,
+    customTuning, handleTuningNoteChange,
+    AVAILABLE_NOTES_POOL,
     displayMode, setDisplayMode,
     isEditMode, setIsEditMode,
     editTargetMode, setEditTargetMode,
     isAudioEnabled, setIsAudioEnabled,
+    isPolyphonyEnabled, setIsPolyphonyEnabled,
     selectedInstrument, setSelectedInstrument,
     isAudioLoading, currentNotes,
     visibleIntervalNotes,
@@ -50,10 +56,14 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
   } = useFretboard();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [isOptionsAccordionOpen, setIsOptionsAccordionOpen] = useState<boolean>(true);
-  const [isTheoryAccordionOpen, setIsTheoryAccordionOpen] = useState<boolean>(false);
-  const [isLegendAccordionOpen, setIsLegendAccordionOpen] = useState<boolean>(false);
-  const [isFilterAccordionOpen, setIsFilterAccordionOpen] = useState<boolean>(false);
+  
+  // Accordions do menu refatorado em 6 itens
+  const [isTimbreOpen, setIsTimbreOpen] = useState<boolean>(true);
+  const [isTuningOpen, setIsTuningOpen] = useState<boolean>(false);
+  const [isScaleOpen, setIsScaleOpen] = useState<boolean>(false);
+  const [isTheoryOpen, setIsTheoryOpen] = useState<boolean>(false);
+  const [isLegendOpen, setIsLegendOpen] = useState<boolean>(false);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -137,7 +147,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
 
         <button
           onClick={() => setIsDrawerOpen(true)}
-          title="Opções Teóricas"
+          title="Opções do Fretboard"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -171,6 +181,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
         <div style={{ flex: 1, backgroundColor: '#1e293b', borderRadius: '12px', padding: '16px', border: isEditMode ? '2px solid #f59e0b' : '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto' }}>
           <FretboardCanvas
             fretsCount={fretsCount}
+            stringCount={stringCount}
             dots={dots}
             onDotClick={handleDotClick}
             onEmptyFretClick={handleEmptyFretClick}
@@ -180,7 +191,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
 
       {isDrawerOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', maxWidth: '380px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ width: '100%', maxWidth: '380px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
               <h3 style={{ margin: 0, fontSize: '16px', color: '#fff' }}>Opções do Fretboard</h3>
               <button onClick={() => setIsDrawerOpen(false)} style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
@@ -188,35 +199,134 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               </button>
             </div>
 
-            <div style={{ backgroundColor: '#0f172a', padding: '12px', borderRadius: '8px', border: '1px solid #334155' }}>
-              <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '6px', fontWeight: 600 }}>Timbre do Instrumento:</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
-                <Disc size={16} color="#10b981" />
-                <select
-                  value={selectedInstrument}
-                  disabled={isAudioLoading}
-                  onChange={(e) => setSelectedInstrument(e.target.value)}
-                  style={{ width: '100%', backgroundColor: 'transparent', color: '#10b981', border: 'none', fontWeight: 700, outline: 'none', fontSize: '12px' }}
-                >
-                  {INSTRUMENT_SOUNDS.map((inst) => (
-                    <option key={inst.value} value={inst.value} style={{ backgroundColor: '#1e293b' }}>
-                      {inst.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
+            {/* ITEM 1: TIMBRE */}
             <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
               <button
-                onClick={() => setIsOptionsAccordionOpen(!isOptionsAccordionOpen)}
+                onClick={() => setIsTimbreOpen(!isTimbreOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
               >
-                <span>1. Selecionar Escala & Opções</span>
-                {isOptionsAccordionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Disc size={14} color="#10b981" />
+                  <span>1. Timbre</span>
+                </div>
+                {isTimbreOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
 
-              {isOptionsAccordionOpen && (
+              {isTimbreOpen && (
+                <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '6px', fontWeight: 600 }}>Timbre do Instrumento:</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
+                      <Disc size={16} color="#10b981" />
+                      <select
+                        value={selectedInstrument}
+                        disabled={isAudioLoading}
+                        onChange={(e) => setSelectedInstrument(e.target.value)}
+                        style={{ width: '100%', backgroundColor: 'transparent', color: '#10b981', border: 'none', fontWeight: 700, outline: 'none', fontSize: '12px' }}
+                      >
+                        {INSTRUMENT_SOUNDS.map((inst) => (
+                          <option key={inst.value} value={inst.value} style={{ backgroundColor: '#1e293b' }}>
+                            {inst.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
+                    <div>
+                      <span style={{ fontSize: '11px', color: '#f8fafc', fontWeight: 700, display: 'block' }}>Modo Polifônico (Deixar Soar):</span>
+                      <span style={{ fontSize: '10px', color: '#94a3b8' }}>Permite acumular notas</span>
+                    </div>
+                    <button
+                      onClick={() => setIsPolyphonyEnabled(!isPolyphonyEnabled)}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid #334155',
+                        backgroundColor: isPolyphonyEnabled ? '#10b981' : '#0f172a',
+                        color: isPolyphonyEnabled ? '#0f172a' : '#94a3b8',
+                        fontWeight: 800,
+                        fontSize: '11px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {isPolyphonyEnabled ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ITEM 2: AFINAÇÃO */}
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+              <button
+                onClick={() => setIsTuningOpen(!isTuningOpen)}
+                style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <SlidersHorizontal size={14} color="#10b981" />
+                  <span>2. Afinação</span>
+                </div>
+                {isTuningOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+
+              {isTuningOpen && (
+                <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Nº de Cordas:</span>
+                      <select value={stringCount} onChange={(e) => handleStringCountChange(Number(e.target.value))} style={{ width: '100%', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', padding: '6px', borderRadius: '6px', fontSize: '12px' }}>
+                        <option value={4}>4 Cordas</option>
+                        <option value={5}>5 Cordas</option>
+                        <option value={6}>6 Cordas</option>
+                        <option value={7}>7 Cordas</option>
+                      </select>
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Trastes:</span>
+                      <select value={fretsCount} onChange={(e) => setFretsCount(Number(e.target.value))} style={{ width: '100%', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', padding: '6px', borderRadius: '6px', fontSize: '12px' }}>
+                        <option value={12}>12 Trastes</option>
+                        <option value={15}>15 Trastes</option>
+                        <option value={21}>21 Trastes</option>
+                        <option value={24}>24 Trastes</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Afinação Personalizada por Corda (coluna única intuitiva da mais aguda para mais grave) */}
+                  <div style={{ backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
+                    <span style={{ fontSize: '11px', color: '#f8fafc', fontWeight: 700, display: 'block', marginBottom: '8px' }}>Afinação Personalizada por Corda:</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {customTuning.map((noteVal, idx) => (
+                        <div key={`tuning-${idx}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#0f172a', padding: '6px 10px', borderRadius: '4px', border: '1px solid #334155' }}>
+                          <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>Corda {idx + 1} ({idx === 0 ? 'Mais Aguda' : idx === customTuning.length - 1 ? 'Mais Grave' : ''}):</span>
+                          <select value={noteVal} onChange={(e) => handleTuningNoteChange(idx, e.target.value)} style={{ backgroundColor: 'transparent', color: '#10b981', border: 'none', fontWeight: 700, fontSize: '12px', outline: 'none', cursor: 'pointer' }}>
+                            {AVAILABLE_NOTES_POOL.map((n) => <option key={n} value={n} style={{ backgroundColor: '#1e293b' }}>{n}</option>)}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ITEM 3: ESCALA */}
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+              <button
+                onClick={() => setIsScaleOpen(!isScaleOpen)}
+                style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Music size={14} color="#10b981" />
+                  <span>3. Escala</span>
+                </div>
+                {isScaleOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+
+              {isScaleOpen && (
                 <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
                     <span style={{ fontSize: '11px', color: '#f8fafc', fontWeight: 700 }}>Modo Cromático:</span>
@@ -292,42 +402,31 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
                     </select>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <div style={{ flex: 1 }}>
-                      <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Trastes:</span>
-                      <select value={fretsCount} onChange={(e) => setFretsCount(Number(e.target.value))} style={{ width: '100%', backgroundColor: '#1e293b', color: '#fff', border: '1px solid #334155', padding: '6px', borderRadius: '6px', fontSize: '12px' }}>
-                        <option value={12}>12 Trastes</option>
-                        <option value={15}>15 Trastes</option>
-                        <option value={21}>21 Trastes</option>
-                        <option value={24}>24 Trastes</option>
-                      </select>
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                      <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Exibição:</span>
-                      <div style={{ display: 'flex', backgroundColor: '#1e293b', padding: '2px', borderRadius: '6px', border: '1px solid #334155' }}>
-                        <button onClick={() => setDisplayMode('degrees')} style={{ flex: 1, padding: '5px', border: 'none', borderRadius: '4px', backgroundColor: displayMode === 'degrees' ? '#10b981' : 'transparent', color: displayMode === 'degrees' ? '#0f172a' : '#94a3b8', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>Graus</button>
-                        <button onClick={() => setDisplayMode('notes')} style={{ flex: 1, padding: '5px', border: 'none', borderRadius: '4px', backgroundColor: displayMode === 'notes' ? '#10b981' : 'transparent', color: displayMode === 'notes' ? '#0f172a' : '#94a3b8', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>Notas</button>
-                      </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Exibição:</span>
+                    <div style={{ display: 'flex', backgroundColor: '#1e293b', padding: '2px', borderRadius: '6px', border: '1px solid #334155' }}>
+                      <button onClick={() => setDisplayMode('degrees')} style={{ flex: 1, padding: '5px', border: 'none', borderRadius: '4px', backgroundColor: displayMode === 'degrees' ? '#10b981' : 'transparent', color: displayMode === 'degrees' ? '#0f172a' : '#94a3b8', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>Graus</button>
+                      <button onClick={() => setDisplayMode('notes')} style={{ flex: 1, padding: '5px', border: 'none', borderRadius: '4px', backgroundColor: displayMode === 'notes' ? '#10b981' : 'transparent', color: displayMode === 'notes' ? '#0f172a' : '#94a3b8', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>Notas</button>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
+            {/* ITEM 4: FUNDAMENTAÇÃO TEÓRICA */}
             <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
               <button
-                onClick={() => setIsTheoryAccordionOpen(!isTheoryAccordionOpen)}
+                onClick={() => setIsTheoryOpen(!isTheoryOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <BookOpen size={14} color="#10b981" />
-                  <span>2. Fundamentação Teórica</span>
+                  <span>4. Fundamentação Teórica</span>
                 </div>
-                {isTheoryAccordionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {isTheoryOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
 
-              {isTheoryAccordionOpen && (
+              {isTheoryOpen && (
                 <div style={{ padding: '12px', borderTop: '1px solid #1e293b', maxHeight: '180px', overflowY: 'auto' }}>
                   <h4 style={{ margin: '0 0 6px 0', color: '#10b981', fontSize: '13px' }}>{theoryInfo.name}</h4>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', margin: '4px 0 8px 0' }}>
@@ -341,19 +440,20 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               )}
             </div>
 
+            {/* ITEM 5: LEGENDA DE CORES */}
             <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
               <button
-                onClick={() => setIsLegendAccordionOpen(!isLegendAccordionOpen)}
+                onClick={() => setIsLegendOpen(!isLegendOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Palette size={14} color="#10b981" />
-                  <span>3. Legenda de Cores</span>
+                  <span>5. Legenda de Cores</span>
                 </div>
-                {isLegendAccordionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {isLegendOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
 
-              {isLegendAccordionOpen && (
+              {isLegendOpen && (
                 <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', maxHeight: '160px', overflowY: 'auto' }}>
                   {Object.entries(INTERVAL_COLORS).map(([code, conf]) => (
                     <div key={code} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -365,19 +465,20 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               )}
             </div>
 
+            {/* ITEM 6: FILTRO POR GRAUS */}
             <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
               <button
-                onClick={() => setIsFilterAccordionOpen(!isFilterAccordionOpen)}
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Eye size={14} color="#10b981" />
-                  <span>4. Filtro por Graus</span>
+                  <span>6. Filtro por Graus</span>
                 </div>
-                {isFilterAccordionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {isFilterOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
 
-              {isFilterAccordionOpen && (
+              {isFilterOpen && (
                 <div style={{ padding: '12px', borderTop: '1px solid #1e293b' }}>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px' }}>
                     {currentNotes.map((note) => {

@@ -3,7 +3,14 @@ import { DEFAULT_INSTRUMENTS } from '@gp-online/audio-engine';
 
 export const CHROMATIC_SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 export const CHROMATIC_FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
-export const STANDARD_TUNING = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
+export const STANDARD_TUNING = ['E4', 'B3', 'G3', 'D3', 'A2', 'E2'];
+
+export const DEFAULT_TUNINGS: { [key: number]: string[] } = {
+  4: ['G2', 'D2', 'A1', 'E1'],             // Baixo 4 cordas (Corda 1: G2 a mais aguda)
+  5: ['G2', 'D2', 'A1', 'E1', 'B0'],       // Baixo 5 cordas (Corda 1: G3 a mais aguda)
+  6: ['E4', 'B3', 'G3', 'D3', 'A2', 'E2'], // Violão / Guitarra Padrão 6 cordas (Corda 1: E4)
+  7: ['E4', 'B3', 'G3', 'D3', 'A2', 'E2', 'B1'] // Guitarra 7 cordas (Corda 1: E4)
+};
 
 export interface ScaleTheoryInfo {
   name: string;
@@ -158,7 +165,8 @@ export function calculateFretboardDots(
   fretsCount: number = 12,
   visibleIntervalNotes: string[],
   hiddenSingleDots: string[],
-  displayMode: 'notes' | 'degrees'
+  displayMode: 'notes' | 'degrees',
+  customTuning: string[] = STANDARD_TUNING
 ): FretDot[] {
   let scaleNotes: string[] = [];
 
@@ -171,7 +179,7 @@ export function calculateFretboardDots(
 
   const dots: FretDot[] = [];
 
-  STANDARD_TUNING.forEach((openNote, stringIndex) => {
+  customTuning.forEach((openNote, stringIndex) => {
     const stringNum = stringIndex + 1;
 
     for (let fret = 0; fret <= fretsCount; fret++) {

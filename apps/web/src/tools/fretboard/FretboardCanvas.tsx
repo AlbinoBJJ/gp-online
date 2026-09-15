@@ -2,6 +2,8 @@ import { type FretDot, INTERVAL_COLORS } from './fretboardCalculator';
 
 interface FretboardCanvasProps {
   fretsCount: number;
+  stringCount?: number;
+  customTuning?: string[];
   dots: FretDot[];
   onDotClick?: (dot: FretDot) => void;
   onEmptyFretClick?: (stringNum: number, fretNum: number) => void;
@@ -9,11 +11,14 @@ interface FretboardCanvasProps {
 
 export function FretboardCanvas({
   fretsCount,
+  stringCount = 6,
   dots,
   onDotClick,
   onEmptyFretClick
 }: FretboardCanvasProps) {
-  const numStrings = 6;
+  // Usa o stringCount passado por parâmetro para renderizar exatamente o número de cordas selecionado
+  const numStrings = stringCount || 6;
+
   const paddingX = 40;
   const paddingY = 30;
   const fretWidth = 60;
@@ -27,8 +32,9 @@ export function FretboardCanvas({
     return paddingX + (fret - 0.5) * fretWidth;
   };
 
+  // Corda 1 fica no topo (y menor) e a última corda (mais grave) embaixo
   const getStringY = (stringNum: number) => {
-    return paddingY + (numStrings - stringNum) * stringDistance;
+    return paddingY + (stringNum - 1) * stringDistance;
   };
 
   const singleMarkFrets = [3, 5, 7, 9, 15, 17, 19, 21];
@@ -116,11 +122,11 @@ export function FretboardCanvas({
           );
         })}
 
-        {/* Cordas (Linhas horizontais) */}
+        {/* Cordas (Linhas horizontais - Corda 1 no topo) */}
         {Array.from({ length: numStrings }).map((_, i) => {
           const stringNum = i + 1;
           const y = getStringY(stringNum);
-          const strokeWidth = 1 + (numStrings - stringNum) * 0.4;
+          const strokeWidth = 1 + i * 0.3;
           return (
             <line
               key={`string-${stringNum}`}

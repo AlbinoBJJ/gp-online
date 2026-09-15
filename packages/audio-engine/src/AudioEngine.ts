@@ -14,6 +14,7 @@ export class AudioEngine {
   private audioCtx: AudioContext | null = null;
   private loadedInstruments: Map<string, Soundfont.Player> = new Map();
   private loadingPromises: Map<string, Promise<Soundfont.Player>> = new Map();
+  private activeNotes: Map<string, { stop?: (time?: number) => void }> = new Map();
 
   private constructor() {}
 
@@ -33,6 +34,22 @@ export class AudioEngine {
       this.audioCtx.resume();
     }
     return this.audioCtx;
+  }
+
+  /**
+   * Para todas as notas que estão atualmente soando (Modo Monofônico)
+   */
+  public stopAllNotes() {
+    this.activeNotes.forEach((node) => {
+      if (node && typeof node.stop === 'function') {
+        try {
+          node.stop();
+        } catch (e) {
+          // Ignora se o nó já encerrou
+        }
+      }
+    });
+    this.activeNotes.clear();
   }
 
   /**
@@ -67,15 +84,39 @@ export class AudioEngine {
   /**
    * Executa uma nota MIDI com o instrumento selecionado
    */
-  public playNote(midiNumber: number, soundfontName: string = 'acoustic_guitar_steel', duration: number = 2.0) {
+  public playNote(
+    midiNumber: number,
+    soundfontName: string = 'acoustic_guitar_steel',
+    duration: number = 2.0,
+    allowPolyphony: boolean = true
+  ) {
+    if (!allowPolyphony) {
+      this.stopAllNotes();
+    }
+
     const player = this.loadedInstruments.get(soundfontName);
     const noteString = String(midiNumber);
+    const noteKey = `${soundfontName}-${midiNumber}-${Date.now()}`;
+
+    const playAction = (p: Soundfont.Player) => {
+      try {
+        const audioNode = p.play(noteString, undefined, { duration });
+        if (audioNode) {
+          this.activeNotes.set(noteKey, audioNode);
+          setTimeout(() => {
+            this.activeNotes.delete(noteKey);
+          }, duration * 1000);
+        }
+      } catch (err) {
+        console.error('[AudioEngine] Erro ao reproduzir nota:', err);
+      }
+    };
 
     if (player) {
-      player.play(noteString, undefined, { duration });
+      playAction(player);
     } else {
       this.loadInstrument(soundfontName).then((p) => {
-        p.play(noteString, undefined, { duration });
+        playAction(p);
       });
     }
   }

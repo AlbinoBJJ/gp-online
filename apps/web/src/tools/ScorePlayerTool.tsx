@@ -18,7 +18,8 @@ import {
   Volume2,
   VolumeX,
   Gauge,
-  LayoutGrid
+  LayoutGrid,
+  Disc
 } from 'lucide-react';
 
 interface ScorePlayerToolProps {
@@ -35,6 +36,8 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
     scoreTitle,
     scoreArtist,
     anacrusisInfo,
+    soundFontUrl,
+    setSoundFontUrl,
     playbackSpeed,
     zoomLevel,
     layoutMode,
@@ -154,6 +157,7 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
         )}
 
         <PlayerCanvas
+          soundFontUrl={soundFontUrl}
           onApiReady={setApi}
           onScoreLoaded={handleScoreLoaded}
           onPlayerStateChanged={setIsPlaying}
@@ -285,7 +289,7 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
               borderRadius: '6px',
               backgroundColor: '#0f172a',
               color: '#10b981',
-              border: '1px solid #334155',
+              border: '1px solid #10b981',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -310,6 +314,26 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
                 <X size={18} />
               </button>
             </div>
+
+            {/* SELETOR DE TIMBRE (SOUNDFONT) */}
+              <div>
+                <label style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontWeight: 600 }}>
+                  <Disc size={14} color="#10b981" />
+                  Timbre do Leitor (SoundFont):
+                </label>
+                <select
+                  value={soundFontUrl}
+                  onChange={(e) => setSoundFontUrl(e.target.value)}
+                  style={{ width: '100%', backgroundColor: '#0f172a', color: '#10b981', border: '1px solid #334155', padding: '8px', borderRadius: '6px', fontWeight: 700, fontSize: '12px' }}
+                >
+                  <option value="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.4/dist/soundfont/sonivox.sf2">
+                    Padrão (Sonivox - Leve)
+                  </option>
+                  <option value={`${import.meta.env.BASE_URL}soundfont/GeneralUser-GS.sf2`}>
+                    GeneralUser GS (Alta Qualidade Local)
+                  </option>
+                </select>
+              </div>
 
             <div>
               <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '6px', fontWeight: 600 }}>Tom (Transposição):</label>
