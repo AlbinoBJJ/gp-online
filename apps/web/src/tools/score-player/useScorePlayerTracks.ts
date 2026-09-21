@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import * as alphaTab from '@coderline/alphatab';
-
-export interface TrackStaveConfig {
-  score: boolean;
-  tab: boolean;
-  slash: boolean;
-}
+import { type TrackStaveConfig } from './types';
 
 export function useScorePlayerTracks(api: alphaTab.AlphaTabApi | null, tracks: alphaTab.model.Track[]) {
   const [visibleTrackIndexes, setVisibleTrackIndexes] = useState<number[]>([]);

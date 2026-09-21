@@ -1,11 +1,6 @@
 import * as alphaTab from '@coderline/alphatab';
 import { Eye, FileText, Hash, Volume2, X } from 'lucide-react';
-
-interface TrackStaveConfig {
-  score: boolean;
-  tab: boolean;
-  slash: boolean;
-}
+import { type TrackStaveConfig } from './types';
 
 interface TrackMixerDrawerProps {
   isOpen: boolean;

@@ -7,8 +7,11 @@ export default defineConfig(({ command }) => ({
     react(),
     alphaTab()
   ],
-
   base: command === 'build' ? '/gp-online/' : '/',
+
+  define: {
+    'import.meta.url': 'import.meta.url'
+  },
   server: {
     watch: {
       ignored: ['**/public/font/**', '**/public/soundfont/**']

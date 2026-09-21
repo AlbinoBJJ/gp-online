@@ -319,7 +319,7 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
               <div>
                 <label style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontWeight: 600 }}>
                   <Disc size={14} color="#10b981" />
-                  Timbre do Leitor (SoundFont):
+                  Timbre do Leitor:
                 </label>
                 <select
                   value={soundFontUrl}
@@ -327,10 +327,10 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
                   style={{ width: '100%', backgroundColor: '#0f172a', color: '#10b981', border: '1px solid #334155', padding: '8px', borderRadius: '6px', fontWeight: 700, fontSize: '12px' }}
                 >
                   <option value="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.4/dist/soundfont/sonivox.sf2">
-                    Padrão (Sonivox - Leve)
+                    Timbre Padrão
                   </option>
                   <option value={`${import.meta.env.BASE_URL}soundfont/GeneralUser-GS.sf2`}>
-                    GeneralUser GS (Alta Qualidade Local)
+                    Timbre melhorado
                   </option>
                 </select>
               </div>
