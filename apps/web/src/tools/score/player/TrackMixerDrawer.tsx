@@ -46,8 +46,14 @@ export function TrackMixerDrawer({
   if (!isOpen) return null;
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', justifyContent: 'flex-end', zIndex: 2000 }}>
-      <div style={{ width: '460px', backgroundColor: '#1e293b', height: '100%', padding: '24px', boxShadow: '-4px 0 20px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column' }}>
+    <div 
+      onClick={onClose}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', justifyContent: 'flex-end', zIndex: 2000 }}
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        style={{ width: '460px', backgroundColor: '#1e293b', height: '100%', padding: '24px', boxShadow: '-4px 0 20px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column' }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #334155', paddingBottom: '12px' }}>
           <h3 style={{ margin: 0, fontSize: '18px', color: '#fff' }}>Mixer Multitrack</h3>
           <button onClick={onClose} style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
@@ -56,24 +62,46 @@ export function TrackMixerDrawer({
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Seção de Ajuste Fino de Volumes Auxiliares */}
           <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: '#f8fafc', marginBottom: '12px' }}>Áudio Auxiliar</div>
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>
-                <span>Metrônomo</span>
-                <span style={{ color: '#10b981', fontWeight: 600 }}>{metronomeVolumePercent}%</span>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: '#f8fafc', marginBottom: '12px' }}>Volumes de Áudio Auxiliar</div>
+            
+            {/* Metrônomo */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Volume Metrônomo</span>
+                <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 600 }}>{metronomeVolumePercent}%</span>
               </div>
-              <input type="range" min="0" max="100" value={metronomeVolumePercent} onChange={(e) => onMetronomeVolumeChange(Number(e.target.value))} disabled={hasAnacrusis} style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }} />
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={metronomeVolumePercent} 
+                disabled={hasAnacrusis}
+                style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
+                onChange={(e) => onMetronomeVolumeChange(Number(e.target.value))} 
+              />
             </div>
+
+            {/* Count-In */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>
-                <span>Count-In</span>
-                <span style={{ color: '#10b981', fontWeight: 600 }}>{countInVolumePercent}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>Volume Count-In</span>
+                <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 600 }}>{countInVolumePercent}%</span>
               </div>
-              <input type="range" min="0" max="100" value={countInVolumePercent} onChange={(e) => onCountInVolumeChange(Number(e.target.value))} disabled={hasAnacrusis} style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }} />
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={countInVolumePercent} 
+                disabled={hasAnacrusis}
+                style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
+                onChange={(e) => onCountInVolumeChange(Number(e.target.value))} 
+              />
             </div>
           </div>
 
+          {/* Controle Individual de Pistas */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ fontSize: '14px', fontWeight: 600, color: '#f8fafc' }}>Controle Individual de Pistas</div>
             {tracks.map((track) => {

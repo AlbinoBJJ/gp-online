@@ -158,8 +158,14 @@ export function EarTrainingTool({ activeTool = 'ear-training', onSelectTool }: E
 
       {/* CONFIGURAÇÕES */}
       {isSettingsOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', maxWidth: '340px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div 
+          onClick={() => setIsSettingsOpen(false)}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '100%', maxWidth: '340px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
               <h3 style={{ margin: 0, fontSize: '15px', color: '#fff' }}>Opções do Ear Training</h3>
               <button onClick={() => setIsSettingsOpen(false)} style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><X size={18} /></button>
@@ -226,8 +232,14 @@ export function EarTrainingTool({ activeTool = 'ear-training', onSelectTool }: E
 
       {/* RELATÓRIO */}
       {isReportOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', maxWidth: '340px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div 
+          onClick={() => setIsReportOpen(false)}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '100%', maxWidth: '340px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
               <h3 style={{ margin: 0, fontSize: '15px', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}><BarChart2 size={16} color="#10b981" /> Relatório de Desempenho</h3>
               <button onClick={() => setIsReportOpen(false)} style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}><X size={18} /></button>

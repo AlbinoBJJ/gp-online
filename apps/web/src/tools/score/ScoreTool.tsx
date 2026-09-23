@@ -1,8 +1,8 @@
-import { Header } from '../components/Header';
-import { PlayerCanvas } from './score-player/PlayerCanvas';
-import { LoopModal } from './score-player/LoopModal';
-import { TrackMixerDrawer } from './score-player/TrackMixerDrawer';
-import { useScorePlayer } from './score-player/useScorePlayer';
+import { Header } from '../../components/Header';
+import { PlayerCanvas } from './player/PlayerCanvas';
+import { LoopModal } from './player/LoopModal';
+import { TrackMixerDrawer } from './player/TrackMixerDrawer';
+import { useScorePlayer } from './player/useScorePlayer';
 import {
   AlertTriangle,
   Sliders,
@@ -19,7 +19,9 @@ import {
   VolumeX,
   Gauge,
   LayoutGrid,
-  Disc
+  Disc,
+  Activity,
+  Hourglass
 } from 'lucide-react';
 
 interface ScorePlayerToolProps {
@@ -27,7 +29,7 @@ interface ScorePlayerToolProps {
   onSelectTool?: (tool: 'player' | 'fretboard' | 'ear-training') => void;
 }
 
-export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePlayerToolProps) {
+export function ScoreTool({ activeTool = 'player', onSelectTool }: ScorePlayerToolProps) {
   const {
     setApi,
     isPlaying,
@@ -83,6 +85,27 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
     setIsPlaying,
     setIsLoading
   } = useScorePlayer();
+
+  const isMetronomeActive = metronomeVolumePercent > 0;
+  const isCountInActive = countInVolumePercent > 0;
+
+  const toggleMetronomeBottom = () => {
+    if (anacrusisInfo?.hasAnacrusis) return;
+    if (isMetronomeActive) {
+      handleMetronomeVolumeChange(0);
+    } else {
+      handleMetronomeVolumeChange(80);
+    }
+  };
+
+  const toggleCountInBottom = () => {
+    if (anacrusisInfo?.hasAnacrusis) return;
+    if (isCountInActive) {
+      handleCountInVolumeChange(0);
+    } else {
+      handleCountInVolumeChange(80);
+    }
+  };
 
   return (
     <div>
@@ -238,6 +261,49 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
           >
             {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
+
+          {/* BOTÕES DE METRÔNOMO E COUNT-IN COM ÍCONES */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '6px', borderLeft: '1px solid #334155', paddingLeft: '8px' }}>
+            <button
+              onClick={toggleMetronomeBottom}
+              disabled={anacrusisInfo?.hasAnacrusis}
+              title={isMetronomeActive ? 'Desativar Metrônomo' : 'Ativar Metrônomo'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '34px',
+                height: '34px',
+                borderRadius: '6px',
+                backgroundColor: isMetronomeActive ? '#10b981' : '#0f172a',
+                color: isMetronomeActive ? '#0f172a' : '#94a3b8',
+                border: '1px solid #334155',
+                cursor: anacrusisInfo?.hasAnacrusis ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <Activity size={18} />
+            </button>
+
+            <button
+              onClick={toggleCountInBottom}
+              disabled={anacrusisInfo?.hasAnacrusis}
+              title={isCountInActive ? 'Desativar Count-In' : 'Ativar Count-In'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '34px',
+                height: '34px',
+                borderRadius: '6px',
+                backgroundColor: isCountInActive ? '#10b981' : '#0f172a',
+                color: isCountInActive ? '#0f172a' : '#94a3b8',
+                border: '1px solid #334155',
+                cursor: anacrusisInfo?.hasAnacrusis ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <Hourglass size={18} />
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -303,8 +369,33 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
 
       {/* DRAWER LATERAL DE CONFIGURAÇÕES */}
       {isSettingsOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex' }}>
-          <div style={{ width: '300px', height: '100%', backgroundColor: '#1e293b', borderRight: '1px solid #334155', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div 
+          onClick={() => setIsSettingsOpen(false)}
+          style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            backgroundColor: 'rgba(0,0,0,0.7)', 
+            zIndex: 2000, 
+            display: 'flex' 
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              width: '300px', 
+              height: '100%', 
+              backgroundColor: '#1e293b', 
+              borderRight: '1px solid #334155', 
+              padding: '20px', 
+              overflowY: 'auto', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '16px' 
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
               <h3 style={{ margin: 0, fontSize: '15px', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Settings size={16} color="#10b981" />
@@ -316,24 +407,24 @@ export function ScorePlayerTool({ activeTool = 'player', onSelectTool }: ScorePl
             </div>
 
             {/* SELETOR DE TIMBRE (SOUNDFONT) */}
-              <div>
-                <label style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontWeight: 600 }}>
-                  <Disc size={14} color="#10b981" />
-                  Timbre do Leitor:
-                </label>
-                <select
-                  value={soundFontUrl}
-                  onChange={(e) => setSoundFontUrl(e.target.value)}
-                  style={{ width: '100%', backgroundColor: '#0f172a', color: '#10b981', border: '1px solid #334155', padding: '8px', borderRadius: '6px', fontWeight: 700, fontSize: '12px' }}
-                >
-                  <option value="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.4/dist/soundfont/sonivox.sf2">
-                    Timbre Padrão
-                  </option>
-                  <option value={`${import.meta.env.BASE_URL}soundfont/GeneralUser-GS.sf2`}>
-                    Timbre melhorado
-                  </option>
-                </select>
-              </div>
+            <div>
+              <label style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontWeight: 600 }}>
+                <Disc size={14} color="#10b981" />
+                Timbre do Leitor:
+              </label>
+              <select
+                value={soundFontUrl}
+                onChange={(e) => setSoundFontUrl(e.target.value)}
+                style={{ width: '100%', backgroundColor: '#0f172a', color: '#10b981', border: '1px solid #334155', padding: '8px', borderRadius: '6px', fontWeight: 700, fontSize: '12px' }}
+              >
+                <option value="https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.4/dist/soundfont/sonivox.sf2">
+                  Timbre básico
+                </option>
+                <option value={`${import.meta.env.BASE_URL}soundfont/GeneralUser-GS.sf2`}>
+                  Timbre melhorado
+                </option>
+              </select>
+            </div>
 
             <div>
               <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '6px', fontWeight: 600 }}>Tom (Transposição):</label>

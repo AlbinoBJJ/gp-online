@@ -66,7 +66,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header activeTool={activeTool} onSelectTool={onSelectTool}>
         <button
           onClick={() => setIsEditMode(!isEditMode)}
@@ -190,8 +190,14 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
       </div>
 
       {isDrawerOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '100%', maxWidth: '380px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', boxSizing: 'border-box' }}>
+        <div 
+          onClick={() => setIsDrawerOpen(false)}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000, display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '100%', maxWidth: '380px', height: '100%', backgroundColor: '#1e293b', borderLeft: '1px solid #334155', padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', boxSizing: 'border-box' }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
               <h3 style={{ margin: 0, fontSize: '16px', color: '#fff' }}>Opções do Fretboard</h3>
               <button onClick={() => setIsDrawerOpen(false)} style={{ backgroundColor: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
@@ -200,7 +206,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
             </div>
 
             {/* ITEM 1: TIMBRE */}
-            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155'}}>
               <button
                 onClick={() => setIsTimbreOpen(!isTimbreOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
@@ -259,7 +265,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
             </div>
 
             {/* ITEM 2: AFINAÇÃO */}
-            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
               <button
                 onClick={() => setIsTuningOpen(!isTuningOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
@@ -295,8 +301,8 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
                     </div>
                   </div>
 
-                  {/* Afinação Personalizada por Corda (coluna única intuitiva da mais aguda para mais grave) */}
-                  <div style={{ backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155' }}>
+                  {/* Afinação Personalizada com altura máxima e scroll independente para mobile landscape */}
+                  <div style={{ backgroundColor: '#1e293b', padding: '8px', borderRadius: '6px', border: '1px solid #334155'}}>
                     <span style={{ fontSize: '11px', color: '#f8fafc', fontWeight: 700, display: 'block', marginBottom: '8px' }}>Afinação Personalizada por Corda:</span>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {customTuning.map((noteVal, idx) => (
@@ -314,7 +320,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
             </div>
 
             {/* ITEM 3: ESCALA */}
-            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155'}}>
               <button
                 onClick={() => setIsScaleOpen(!isScaleOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
@@ -414,7 +420,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
             </div>
 
             {/* ITEM 4: FUNDAMENTAÇÃO TEÓRICA */}
-            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155'}}>
               <button
                 onClick={() => setIsTheoryOpen(!isTheoryOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
@@ -427,7 +433,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               </button>
 
               {isTheoryOpen && (
-                <div style={{ padding: '12px', borderTop: '1px solid #1e293b', maxHeight: '180px', overflowY: 'auto' }}>
+                <div style={{ padding: '12px', borderTop: '1px solid #1e293b', maxHeight: '160px', overflowY: 'auto' }}>
                   <h4 style={{ margin: '0 0 6px 0', color: '#10b981', fontSize: '13px' }}>{theoryInfo.name}</h4>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', margin: '4px 0 8px 0' }}>
                     {theoryInfo.formula.map((deg, idx) => (
@@ -440,8 +446,8 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               )}
             </div>
 
-            {/* ITEM 5: LEGENDA DE CORES */}
-            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+            {/* ITEM 5: LEGENDA DE CORES (Com max-height e overflowY independentes) */}
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
               <button
                 onClick={() => setIsLegendOpen(!isLegendOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}
@@ -454,7 +460,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
               </button>
 
               {isLegendOpen && (
-                <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', maxHeight: '160px', overflowY: 'auto' }}>
+                <div style={{ padding: '12px', borderTop: '1px solid #1e293b', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', maxHeight: '140px' }}>
                   {Object.entries(INTERVAL_COLORS).map(([code, conf]) => (
                     <div key={code} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: conf.bg }} />
@@ -466,7 +472,7 @@ export function FretboardTool({ activeTool = 'fretboard', onSelectTool }: Fretbo
             </div>
 
             {/* ITEM 6: FILTRO POR GRAUS */}
-            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 style={{ width: '100%', padding: '10px 14px', backgroundColor: 'transparent', border: 'none', color: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 700, fontSize: '12px' }}

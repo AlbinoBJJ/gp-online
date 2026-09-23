@@ -13,10 +13,9 @@ export function useScorePlayer() {
   const [scoreArtist, setScoreArtist] = useState<string | null>(null);
   const [anacrusisInfo, setAnacrusisInfo] = useState<AnacrusisCheckResult | null>(null);
 
-  // SoundFont URL State
   const [soundFontUrl, setSoundFontUrl] = useState<string>(
-    'https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.4/dist/soundfont/sonivox.sf2'
-  );
+  `${import.meta.env.BASE_URL}soundfont/GeneralUser-GS.sf2`
+);
 
   // Controles Globais
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -26,9 +25,9 @@ export function useScorePlayer() {
   const [isMuted, setIsMuted] = useState(false);
   const [transposition, setTransposition] = useState<number>(0);
 
-  // Metrônomo Auxiliar
-  const [metronomeVolumePercent, setMetronomeVolumePercent] = useState<number>(50);
-  const [countInVolumePercent, setCountInVolumePercent] = useState<number>(50);
+  // Metrônomo Auxiliar (Padrão inativo: 0%)
+  const [metronomeVolumePercent, setMetronomeVolumePercent] = useState<number>(0);
+  const [countInVolumePercent, setCountInVolumePercent] = useState<number>(0);
 
   // Modais & Drawers
   const [isMixerOpen, setIsMixerOpen] = useState<boolean>(false);
@@ -124,9 +123,15 @@ export function useScorePlayer() {
     trackManager.initializeTracks(score.tracks);
     setAnacrusisInfo(result);
 
-    if (api && result.hasAnacrusis) {
-      api.metronomeVolume = 0;
-      api.countInVolume = 0;
+    if (api) {
+      if (result.hasAnacrusis) {
+        api.metronomeVolume = 0;
+        api.countInVolume = 0;
+      } else {
+        // Garante aplicação dos volumes iniciais (0 por padrão)
+        api.metronomeVolume = percentToAlphaTabVolume(metronomeVolumePercent);
+        api.countInVolume = percentToAlphaTabVolume(countInVolumePercent);
+      }
     }
   };
 

@@ -26,10 +26,38 @@ export function useScorePlayerTracks(api: alphaTab.AlphaTabApi | null, tracks: a
     const initialStaves: { [key: number]: TrackStaveConfig } = {};
 
     loadedTracks.forEach((track) => {
+      // 1. Configurações de playback (volumes, mutes, solos)
       initialVolumes[track.index] = alphaTabVolumeToPercent(track.playbackInfo.volume);
       initialMutes[track.index] = track.playbackInfo.isMute;
       initialSolos[track.index] = track.playbackInfo.isSolo;
-      initialStaves[track.index] = { score: true, tab: true, slash: false };
+
+      // 2. Leitura segura e robusta das pautas do AlphaTab
+      const firstStave = track.staves && track.staves[0];
+      
+      // Verificamos explicitamente o valor booleano ou assumimos true se a pauta possuir notas/tablatura ativa
+      let showScore = true;
+      let showTab = true;
+
+      if (firstStave) {
+        // O AlphaTab armazena a visibilidade; tratamos indefinições como true por segurança, 
+        // mas respeitando caso venha explicitamente false.
+        showScore = firstStave.showStandardNotation !== false;
+        showTab = firstStave.showTablature !== false;
+      }
+
+      initialStaves[track.index] = { 
+        score: showScore, 
+        tab: showTab, 
+        slash: false 
+      };
+
+      // 3. Força o AlphaTab a sincronizar perfeitamente com o estado inicial apurado
+      if (track.staves) {
+        track.staves.forEach((stave) => {
+          stave.showStandardNotation = showScore;
+          stave.showTablature = showTab;
+        });
+      }
     });
 
     setVisibleTrackIndexes(initialVisible);
@@ -80,6 +108,12 @@ export function useScorePlayerTracks(api: alphaTab.AlphaTabApi | null, tracks: a
   const toggleTrackStaveType = (trackIndex: number, type: keyof TrackStaveConfig) => {
     const current = trackStaves[trackIndex] || { score: true, tab: true, slash: false };
     const updated = { ...current, [type]: !current[type] };
+
+    const hasAtLeastOneActive = updated.score || updated.tab || updated.slash;
+    if (!hasAtLeastOneActive) {
+      return; 
+    }
+
     setTrackStaves((prev) => ({ ...prev, [trackIndex]: updated }));
 
     if (!api || !tracks[trackIndex]) return;
